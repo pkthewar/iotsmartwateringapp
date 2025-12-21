@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/SmartPlantWaterer/.vs/SmartPlantWaterer
+/SmartPlantWaterer/obj/Debug/net8.0
+/SmartPlantWaterer/Controllers/WeatherForecastController.cs
+/SmartPlantWaterer/backend/Controllers/WeatherForecastController.cs
+/SmartPlantWaterer/backend/obj/Debug/net8.0
+/SmartPlantWaterer/backend/obj
+/SmartPlantWaterer/backend/WeatherForecast.cs
+/SmartPlantWaterer/backend/.vs/SmartPlantWaterer
+/SmartPlantWaterer/backend/bin/Debug/net8.0
+/.vs/iotsmartwateringapp.slnx/v18
+/SmartPlantWaterer/.vs/ProjectEvaluation

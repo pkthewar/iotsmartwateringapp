@@ -1,0 +1,50 @@
+﻿using Microsoft.AspNetCore.SignalR;
+using SmartPlantWaterer.Data;
+using SmartPlantWaterer.Hubs;
+using SmartPlantWaterer.Models;
+
+namespace SmartPlantWaterer.Services
+{
+    public class TelemetryService(AppDbContext appDbContext, OnnxPredictionService onnxPredictionService, WateringRuleEngine wateringRuleEngine, PumpService pumpService, IHubContext<TelemetryHub> hubContext)
+    {
+        private readonly AppDbContext db = appDbContext;
+        private readonly OnnxPredictionService onnx = onnxPredictionService;
+        private readonly WateringRuleEngine rules = wateringRuleEngine;
+        private readonly PumpService pump = pumpService;
+        private readonly IHubContext<TelemetryHub> hub = hubContext;
+
+        public async Task ProcessTelemetryAsync(TelemetryDto dto)
+        {
+            float score = onnx.Predict(dto.Moisture, dto.Temperature, dto.Humidity);
+
+            bool shouldWater = rules.ShouldWater(new Telemetry
+            {
+                Moisture = dto.Moisture,
+                Temperature = dto.Temperature,
+                Humidity = dto.Humidity
+            });
+
+            if (shouldWater)
+                await pump.ActivatePumpAsync(dto.PlantId);
+
+            Telemetry telemetry = new Telemetry
+            {
+                PlantId = dto.PlantId,
+                Moisture = dto.Moisture,
+                Temperature = dto.Temperature,
+                Humidity = dto.Humidity,
+                Score = score,
+                WaterNow = shouldWater
+            };
+
+            db.TelemetryLogs.Add(telemetry);
+            await db.SaveChangesAsync();
+
+            //Broadcast to all plants. This is commented for now.
+            //await hub.Clients.All.SendAsync("TelemetryUpdate", telemetry);
+
+            //Broadcast to a specific plant
+            await hub.Clients.Group($"plant-{telemetry.PlantId}").SendAsync("TelemetryUpdate", telemetry);
+        }
+    }
+}
