@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SmartPlantWaterer.Data;
 using SmartPlantWaterer.Hubs;
-using SmartPlantWaterer.Services;
+using SmartPlantWaterer.Services.Implementations;
+using SmartPlantWaterer.Services.Interfaces;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +18,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(a => a.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-builder.Services.AddSingleton<OnnxPredictionService>();
-builder.Services.AddSingleton<WateringRuleEngine>();
-builder.Services.AddSingleton<PumpService>();
-builder.Services.AddSingleton<TelemetryService>();
+builder.Services.AddSingleton<IOnnxPredictionService, OnnxPredictionService>();
+builder.Services.AddSingleton<IWateringRuleEngine, WateringRuleEngine>();
+builder.Services.AddSingleton<IPumpService, PumpService>();
+builder.Services.AddSingleton<ITelemetryService, TelemetryService>();
 builder.Services.AddHostedService<MqttListenerService>();
+builder.Services.AddSingleton<IHealthService, HealthService>();
 
 WebApplication app = builder.Build();
 

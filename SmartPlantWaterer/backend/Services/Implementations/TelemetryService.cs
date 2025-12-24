@@ -2,10 +2,11 @@
 using SmartPlantWaterer.Data;
 using SmartPlantWaterer.Hubs;
 using SmartPlantWaterer.Models;
+using SmartPlantWaterer.Services.Interfaces;
 
-namespace SmartPlantWaterer.Services
+namespace SmartPlantWaterer.Services.Implementations
 {
-    public class TelemetryService(AppDbContext appDbContext, OnnxPredictionService onnxPredictionService, WateringRuleEngine wateringRuleEngine, PumpService pumpService, IHubContext<TelemetryHub> hubContext)
+    public class TelemetryService(AppDbContext appDbContext, OnnxPredictionService onnxPredictionService, WateringRuleEngine wateringRuleEngine, PumpService pumpService, IHubContext<TelemetryHub> hubContext) : ITelemetryService
     {
         private readonly AppDbContext db = appDbContext;
         private readonly OnnxPredictionService onnx = onnxPredictionService;
@@ -27,7 +28,7 @@ namespace SmartPlantWaterer.Services
             if (shouldWater)
                 await pump.ActivatePumpAsync(dto.PlantId);
 
-            Telemetry telemetry = new Telemetry
+            Telemetry telemetry = new()
             {
                 PlantId = dto.PlantId,
                 Moisture = dto.Moisture,

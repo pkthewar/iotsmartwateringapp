@@ -1,9 +1,10 @@
 ﻿using Microsoft.ML.OnnxRuntime;
 using Microsoft.ML.OnnxRuntime.Tensors;
+using SmartPlantWaterer.Services.Interfaces;
 
-namespace SmartPlantWaterer.Services
+namespace SmartPlantWaterer.Services.Implementations
 {
-    public class OnnxPredictionService
+    public class OnnxPredictionService : IOnnxPredictionService
     {
         private readonly InferenceSession inferenceSession;
 

@@ -1,9 +1,8 @@
-﻿
-using MQTTnet;
+﻿using MQTTnet;
 using SmartPlantWaterer.Models;
 using System.Text.Json;
 
-namespace SmartPlantWaterer.Services
+namespace SmartPlantWaterer.Services.Implementations
 {
     public class MqttListenerService(IServiceProvider serviceProvider) : BackgroundService
     {

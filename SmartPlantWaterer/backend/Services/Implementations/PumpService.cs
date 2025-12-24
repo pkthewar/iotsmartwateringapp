@@ -1,8 +1,9 @@
 ﻿using MQTTnet;
+using SmartPlantWaterer.Services.Interfaces;
 
-namespace SmartPlantWaterer.Services
+namespace SmartPlantWaterer.Services.Implementations
 {
-    public class PumpService
+    public class PumpService : IPumpService
     {
         public async Task ActivatePumpAsync(int plantId)
         {
