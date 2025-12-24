@@ -9,3 +9,4 @@ Next Actions from ChatGPT:
 8. ESP32 heartbeat topic
 9. Battery voltage health
 10. Prometheus-style metrics
+11. Logic for change in plant selection.
