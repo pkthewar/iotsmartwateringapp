@@ -1,12 +1,6 @@
 Next Actions from ChatGPT:
-1. Authentication
-2. Alert Thresholds
-3. Plant profiles
-4. Offline Simulator
-5. PWA Mobile App
-6. Health Alerts
-7. Health widget in React
-8. ESP32 heartbeat topic
-9. Battery voltage health
-10. Prometheus-style metrics
-11. Logic for change in plant selection.
+1. Offline Simulator
+2. PWA Mobile App
+3. Health widget in React
+4. Prometheus-style metrics
+5. Logic for change in plant selection.

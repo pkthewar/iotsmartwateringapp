@@ -1,34 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SmartPlantWaterer.Data;
 using SmartPlantWaterer.Models;
+using SmartPlantWaterer.Models.DbModels;
 using SmartPlantWaterer.Services.Interfaces;
 
 namespace SmartPlantWaterer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TelemetryController(AppDbContext appDbContext, ITelemetryService telemetryService, IPumpService pumpService, IOnnxPredictionService onnxPredictionService, IHealthService healthService) : ControllerBase
+    public class TelemetryController(AppDbContext appDbContext, ITelemetryService telemetryService, IPumpService pumpService, IOnnxPredictionService onnxPredictionService) : ControllerBase
     {
         private readonly AppDbContext appDbContext = appDbContext;
         private readonly ITelemetryService telemetryService = telemetryService;
         private readonly IPumpService pumpService = pumpService;
         private readonly IOnnxPredictionService onnxPredictionService = onnxPredictionService;
-        private readonly IHealthService healthService = healthService;
-
-        /// <summary>
-        /// Action method which checks whether system is up and running.
-        /// </summary>
-        /// <returns>StatusCode object with the status code and health details of system.</returns>
-        [HttpGet("getHealth")]
-        public async Task<IActionResult> Health()
-        {
-            HealthStatus health = await healthService.CheckAsync();
-
-            int httpStatus = health.OverallStatus!.Equals("Healthy", StringComparison.OrdinalIgnoreCase) ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable;
-
-            return StatusCode(httpStatus, health);
-        }
 
         /// <summary>
         /// Action method which inserts the watering activity of the plant.
@@ -36,12 +23,12 @@ namespace SmartPlantWaterer.Controllers
         /// <param name="telemetryDto">Details of the plant and its surrounding environment</param>
         /// <returns>Ok object which mentions successful insertion of record.</returns>
         [HttpPost("ingest")]
-        public async Task<IActionResult> Ingest([FromBody] TelemetryDto telemetryDto)
+        public async Task<IActionResult> Ingest([FromBody] TelemetryDto telemetryDto, PlantProfile plantProfile)
         {
             if (telemetryDto == null)
                 return BadRequest("Telemetry payload is missing");
 
-            await telemetryService.ProcessTelemetryAsync(telemetryDto);
+            await telemetryService.ProcessTelemetryAsync(telemetryDto, plantProfile);
 
             return Ok(new
             {
@@ -54,6 +41,7 @@ namespace SmartPlantWaterer.Controllers
         /// </summary>
         /// <param name="plantId">Id of the plant to be watered</param>
         /// <returns>Success message once watering is successfully triggered.</returns>
+        [Authorize(Policy = "CanWater")]
         [HttpPost("water/{plantId}")]
         public async Task<IActionResult> WaterPlant(int plantId)
         {
@@ -74,7 +62,7 @@ namespace SmartPlantWaterer.Controllers
         [HttpGet("{plantId}/latest")]
         public async Task<IActionResult> GetLatest(int plantId)
         {
-            Telemetry? telemetry = await appDbContext.TelemetryLogs.OrderByDescending(t => t.CreatedAt).FirstOrDefaultAsync(t => t.PlantId == plantId);
+            Telemetry? telemetry = await appDbContext.TelemetryLogs.OrderByDescending(t => t.CreatedOn).FirstOrDefaultAsync(t => t.PlantId == plantId);
 
             if (telemetry == null)
                 return NotFound("No telemetry found");
@@ -93,7 +81,7 @@ namespace SmartPlantWaterer.Controllers
         {
             DateTime since = DateTime.UtcNow.AddHours(hrs);
 
-            List<Telemetry> histories = await appDbContext.TelemetryLogs.Where(t => t.PlantId == plantId && t.CreatedAt >= since).OrderBy(t => t.CreatedAt).ToListAsync();
+            List<Telemetry> histories = await appDbContext.TelemetryLogs.Where(t => t.PlantId == plantId && t.CreatedOn >= since).OrderBy(t => t.CreatedOn).ToListAsync();
 
             return Ok(histories);
         }

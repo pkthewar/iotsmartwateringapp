@@ -12,6 +12,8 @@
 
         public bool IsTelemetryFresh { get; set; }
 
+        public bool IsBatteryHealthy { get; set; }
+
         public string? OverallStatus { get; set; }
 
         public DateTime TimeStamp { get; set; } = DateTime.UtcNow;

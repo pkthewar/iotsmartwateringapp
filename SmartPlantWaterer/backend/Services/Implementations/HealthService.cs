@@ -55,7 +55,7 @@ namespace SmartPlantWaterer.Services.Implementations
 
             try
             {
-                DateTime mostRecentTelemetry = await appDbContext.TelemetryLogs.OrderByDescending(t => t.CreatedAt).Select(t => t.CreatedAt).FirstOrDefaultAsync();
+                DateTime mostRecentTelemetry = await appDbContext.TelemetryLogs.OrderByDescending(t => t.CreatedOn).Select(t => t.CreatedOn).FirstOrDefaultAsync();
 
                 healthStatus.IsTelemetryFresh = mostRecentTelemetry > DateTime.UtcNow.AddMinutes(-5);
             }

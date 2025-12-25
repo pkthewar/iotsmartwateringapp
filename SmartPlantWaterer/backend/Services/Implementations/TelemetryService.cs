@@ -2,6 +2,7 @@
 using SmartPlantWaterer.Data;
 using SmartPlantWaterer.Hubs;
 using SmartPlantWaterer.Models;
+using SmartPlantWaterer.Models.DbModels;
 using SmartPlantWaterer.Services.Interfaces;
 
 namespace SmartPlantWaterer.Services.Implementations
@@ -14,7 +15,7 @@ namespace SmartPlantWaterer.Services.Implementations
         private readonly PumpService pump = pumpService;
         private readonly IHubContext<TelemetryHub> hub = hubContext;
 
-        public async Task ProcessTelemetryAsync(TelemetryDto dto)
+        public async Task ProcessTelemetryAsync(TelemetryDto dto, PlantProfile plantProfile)
         {
             float score = onnx.Predict(dto.Moisture, dto.Temperature, dto.Humidity);
 
@@ -23,7 +24,7 @@ namespace SmartPlantWaterer.Services.Implementations
                 Moisture = dto.Moisture,
                 Temperature = dto.Temperature,
                 Humidity = dto.Humidity
-            });
+            }, plantProfile);
 
             if (shouldWater)
                 await pump.ActivatePumpAsync(dto.PlantId);

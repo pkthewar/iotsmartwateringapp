@@ -1,4 +1,4 @@
-﻿namespace SmartPlantWaterer.Models
+﻿namespace SmartPlantWaterer.Models.DbModels
 {
     public class Telemetry
     {
@@ -9,6 +9,6 @@
         public float Humidity { get; set; }
         public float Score { get; set; }
         public bool WaterNow { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     }
 }

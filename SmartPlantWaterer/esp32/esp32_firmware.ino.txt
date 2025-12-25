@@ -1,0 +1,49 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include "DHT.h"
+
+#define DHTPIN 4
+#define DHTTYPE DHT22
+#define SOIL_PIN 34
+#define BATTERY_PIN 35
+#define RELAY_PIN 26
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+	pinMode(RELAY_PIN, OUTPUT);
+	WiFi.begin("SSID", "PASS");
+	while(WiFi.status() != WL_CONNECTED){
+		delay(500);
+	}
+	
+	client.setServer("192.168.1.10", 1883);
+	dht.begin();
+}
+
+void loop() {
+	if(!client.connected()) client.connect("plant1");
+	
+	float temperature = dht.readTemperature();
+	float humidity = dht.readHumidity();
+	int moisture = analogRead(SOIL_PIN);
+	
+	//Read battery voltage
+	float batteryVoltage = analogRead(BATTERY_PIN) * 2.0 * 3.3 / 4095.0;
+	
+	// Telemetry payload
+	char telemetryMsg[128];
+	
+	sprintf(telemetryMsg, "{\"plantId\":1,\"temperature\":%.2f,\"humidity\":%.2f,\"moisture\":%d}", temperature, humidity, moisture);
+	client.publish("plants/telemetry", telemetryMsg);
+	
+	char heartBeatMsg[96];
+	
+	sprintf(heartBeatMsg, "{\"plantId\":1,\"battery\":%.2f}", batteryVoltage);
+	
+	client.publish("plants/heartbeat", heartBeatMsg);
+	
+	delay(10000);
+}
