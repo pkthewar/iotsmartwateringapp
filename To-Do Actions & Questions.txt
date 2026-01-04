@@ -1,6 +1,8 @@
 Next Actions from ChatGPT:
-1. Offline Simulator
-2. PWA Mobile App
-3. Health widget in React
-4. Prometheus-style metrics
-5. Logic for change in plant selection.
+1. Offline Simulator: Done
+2. PWA Mobile App: Done
+3. Health widget in React: Done
+4. Prometheus-style metrics: Kept on hold
+5. Logic for change in plant selection: Done
+6. Dynamically add and remove plants from the system. There shouldn't be a need to manually specify the plant ID array
+

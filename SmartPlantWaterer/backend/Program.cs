@@ -1,14 +1,22 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartPlantWaterer.Data;
+using SmartPlantWaterer.Helpers.MapperProfile;
 using SmartPlantWaterer.Hubs;
 using SmartPlantWaterer.Services.Implementations;
 using SmartPlantWaterer.Services.Interfaces;
+using SmartPlantWaterer.Simulation;
 using System.Text;
+using AutoMapper;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+//TelemetrySimulator simulator = new(
+//[
+//    1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+//]);
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", o =>
 {
@@ -44,6 +52,8 @@ builder.Services.AddSingleton<IHealthService, HealthService>();
 builder.Services.AddScoped<IAlertChannel, TelegramAlertService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
 
+builder.Services.AddSingleton(sp => new TelemetrySimulator([.. Enumerable.Range(1, 10)]));
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -60,5 +70,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<TelemetryHub>("/hubs/telemetry");
+
+TelemetrySimulator telemetrySimulator = app.Services.GetRequiredService<TelemetrySimulator>();
+TelemetryService service = app.Services.GetRequiredService<TelemetryService>();
+
+telemetrySimulator.OnTelemetry += async (dto, profile) =>
+{
+    await service.ProcessTelemetryAsync(dto, profile);
+};
 
 app.Run();

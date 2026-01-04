@@ -36,7 +36,8 @@ namespace SmartPlantWaterer.Services.Implementations
                 Temperature = dto.Temperature,
                 Humidity = dto.Humidity,
                 Score = score,
-                WaterNow = shouldWater
+                WaterNow = shouldWater,
+                BatteryVoltage = dto.BatteryVoltage
             };
 
             db.TelemetryLogs.Add(telemetry);

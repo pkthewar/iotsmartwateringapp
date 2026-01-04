@@ -16,6 +16,12 @@
 
         public string? OverallStatus { get; set; }
 
+        public DateTime? LastTelemetryTime { get; set; }
+
+        public int ActivePlants { get; set; }
+
+        public int TotalPlants { get; set; }
+
         public DateTime TimeStamp { get; set; } = DateTime.UtcNow;
     }
 }

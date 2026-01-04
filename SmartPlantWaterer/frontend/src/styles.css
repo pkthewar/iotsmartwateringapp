@@ -1,0 +1,32 @@
+body {
+    font-family: system-ui;
+    margin: 0;
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+.container {
+    padding: 1rem
+}
+
+.card {
+    background: #020617;
+    padding: 1rem;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+select {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+}
+
+.health {
+    border-left: 6px solid #22c55e;
+}
+
+.health.offline {
+    border-left-color: red;
+    color: #fca5a5;
+}

@@ -9,6 +9,7 @@
         public float Humidity { get; set; }
         public float Score { get; set; }
         public bool WaterNow { get; set; }
+        public double BatteryVoltage { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     }
 }

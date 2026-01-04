@@ -5,26 +5,38 @@ import {LineChart, Line, XAxis, YAxis, ToolTip} from 'recharts'
 export default function App() {
     const[plant, setPlant] = useState(1)
     const[data, setData] = useState([])
+    const connectionRef = useState(null)
 
+    //Clear old telemetry
     useEffect(() => {
-        const c = new signalR.HubConnectionBuilder().withUrl("http://localhost:5001/hubs/telemetry").build()
+        setData([])
+    
+        if (connectionRef.current)
+            connectionRef.current.stop()
 
-        c.on('TelemetryUpdate', t => {
+        const connection = new signalR.HubConnectionBuilder().withUrl("http://localhost:5001/hubs/telemetry").withAutomaticReconnect().build()
+
+        connection.on('TelemetryUpdate', t => {
             if (t.plantId === plant)
                 setData(d => [...d.slice(-20), t])
         })
 
-        c.start().then(() => {
-            c.invoke('SubscribePlant', plant)
+        connection.start().then(() => {
+            connection.invoke('SubscribePlant', plant)
         })
-        
-        // To-Do: Add more logic in case of change in plant selection.
+
+        connectionRef.current = connection
+
+
+        return() => {
+            connection.stop()
+        }
     }, [plant])
 
     return (
         <div>
-            <select onChange={e => setPlant(+e.target.value)}>
-                {[1,2,3,4,5].map(p => <option key = {p}>Plant {p}</option>)}
+            <select value = {plant} onChange={e => setPlant(+e.target.value)}>
+                {[1,2,3,4,5,6,7,8,9,10].map(p => <option key = {p}>Plant {p}</option>)}
             </select>
 
             <LineChart width = {350} height = {250} data = {data}>

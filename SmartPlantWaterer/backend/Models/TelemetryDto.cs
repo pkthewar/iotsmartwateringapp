@@ -6,5 +6,6 @@
         public float Moisture { get; set; }
         public float Temperature { get; set; }
         public float Humidity { get; set; }
+        public double BatteryVoltage { get; set; }
     }
 }

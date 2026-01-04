@@ -33,14 +33,23 @@ namespace SmartPlantWaterer.Controllers
             HeartBeat? lastHeartBeat = await appDbContext.HeartBeatLogs.Where(h => h.PlantId == plantId).OrderByDescending(h => h.CreatedOn).FirstOrDefaultAsync();
 
             if (lastHeartBeat is null)
-                return Ok("No heartbeat logs for the plant");
+                return Ok(new
+                {
+                    plantId,
+                    status = "Offline",
+                    mesage = "No heartbeat received",
+                    voltage = (float?)null
+                });
+
+            string status = lastHeartBeat.Value > 3.3f ? "Healthy" : lastHeartBeat.Value > 3.0f ? "Warning" : "Critical";
 
             return Ok(new
             {
                 plantId,
-                LastAlert = lastHeartBeat.Message,
+                Status = status,
+                message = lastHeartBeat.Message,
                 Voltage = lastHeartBeat.Value,
-                Status = lastHeartBeat.Value > 3.3f ? "Battery is healthy" : lastHeartBeat.Value < 3.2f && lastHeartBeat.Value > 3.0f ? "Warning - Battery is low" : "Battery is critically low"
+                LastSeen = lastHeartBeat.CreatedOn
             });
         }
     }

@@ -10,6 +10,8 @@
 
         public int MaxMoisture { get; set; }
 
+        public int Temperature { get; set; }
+
         public int WaterDurationSeconds { get; set; }
     }
 }

@@ -57,12 +57,19 @@ namespace SmartPlantWaterer.Services.Implementations
             {
                 DateTime mostRecentTelemetry = await appDbContext.TelemetryLogs.OrderByDescending(t => t.CreatedOn).Select(t => t.CreatedOn).FirstOrDefaultAsync();
 
+                healthStatus.LastTelemetryTime = mostRecentTelemetry;
+
                 healthStatus.IsTelemetryFresh = mostRecentTelemetry > DateTime.UtcNow.AddMinutes(-5);
             }
             catch
             {
                 healthStatus.IsTelemetryFresh = false;
             }
+
+            //TO-DO: Add dynamic logic for Total number of plants.
+            healthStatus.TotalPlants = 10;
+
+            healthStatus.ActivePlants = await appDbContext.TelemetryLogs.Where(t => t.CreatedOn > DateTime.UtcNow.AddMinutes(-5)).Select(t => t.PlantId).Distinct().CountAsync();
 
             healthStatus.OverallStatus = healthStatus.IsApiRunning && healthStatus.IsDatabaseRunning && healthStatus.IsMqttWorking && healthStatus.IsOnnxPredicting && healthStatus.IsTelemetryFresh ? "Healthy" : "Degraded";
 
