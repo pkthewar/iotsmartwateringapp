@@ -4,5 +4,5 @@ Next Actions from ChatGPT:
 3. Health widget in React: Done
 4. Prometheus-style metrics: Kept on hold
 5. Logic for change in plant selection: Done
-6. Dynamically add and remove plants from the system. There shouldn't be a need to manually specify the plant ID array
-
+6. Dynamically add and remove plants from the system. There shouldn't be a need to manually specify the plant ID array: Done
+7. Create database and run the simulator to test the offline application flow.

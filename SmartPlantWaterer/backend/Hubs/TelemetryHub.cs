@@ -9,7 +9,7 @@ namespace SmartPlantWaterer.Hubs
         /// </summary>
         /// <param name="plantId">Id of the specific plant to be subscribed</param>
         /// <returns></returns>
-        public async Task SubscribePlant(int plantId) => await Groups.AddToGroupAsync(Context.ConnectionId, $"plant{plantId}");
+        public async Task SubscribePlant(int plantId) => await Groups.AddToGroupAsync(Context.ConnectionId, $"plant-{plantId}");
 
         /// <summary>
         /// Client unsubscribes from a specific plant

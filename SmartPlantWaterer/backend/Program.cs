@@ -1,13 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SmartPlantWaterer.Data;
-using SmartPlantWaterer.Helpers.MapperProfile;
 using SmartPlantWaterer.Hubs;
 using SmartPlantWaterer.Services.Implementations;
 using SmartPlantWaterer.Services.Interfaces;
 using SmartPlantWaterer.Simulation;
 using System.Text;
-using AutoMapper;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -51,8 +49,18 @@ builder.Services.AddHostedService<MqttListenerService>();
 builder.Services.AddSingleton<IHealthService, HealthService>();
 builder.Services.AddScoped<IAlertChannel, TelegramAlertService>();
 builder.Services.AddScoped<IAlertService, AlertService>();
+builder.Services.AddScoped<IPlantService, PlantService>();
 
-builder.Services.AddSingleton(sp => new TelemetrySimulator([.. Enumerable.Range(1, 10)]));
+builder.Services.AddSingleton(sp =>
+{
+    using IServiceScope scope = sp.CreateScope();
+
+    AppDbContext db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    int[] plantIds = [.. db.Plants.Where(p => p.IsActive).Select(p => p.Id)];
+
+    return new TelemetrySimulator(plantIds);
+});
 
 WebApplication app = builder.Build();
 

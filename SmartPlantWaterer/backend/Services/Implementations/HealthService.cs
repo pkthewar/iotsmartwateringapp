@@ -67,9 +67,9 @@ namespace SmartPlantWaterer.Services.Implementations
             }
 
             //TO-DO: Add dynamic logic for Total number of plants.
-            healthStatus.TotalPlants = 10;
+            healthStatus.TotalPlants = await appDbContext.Plants.CountAsync();
 
-            healthStatus.ActivePlants = await appDbContext.TelemetryLogs.Where(t => t.CreatedOn > DateTime.UtcNow.AddMinutes(-5)).Select(t => t.PlantId).Distinct().CountAsync();
+            healthStatus.ActivePlants = await appDbContext.Plants.CountAsync(p => p.IsActive);
 
             healthStatus.OverallStatus = healthStatus.IsApiRunning && healthStatus.IsDatabaseRunning && healthStatus.IsMqttWorking && healthStatus.IsOnnxPredicting && healthStatus.IsTelemetryFresh ? "Healthy" : "Degraded";
 

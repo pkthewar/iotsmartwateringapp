@@ -8,5 +8,7 @@ namespace SmartPlantWaterer.Data
         public DbSet<Telemetry> TelemetryLogs => Set<Telemetry>();
 
         public DbSet<HeartBeat> HeartBeatLogs => Set<HeartBeat>();
+
+        public DbSet<Plants> Plants => Set<Plants>();
     }
 }
